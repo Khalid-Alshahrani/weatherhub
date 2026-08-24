@@ -9,66 +9,93 @@ export default function Home() {
   const handleSearch = async () => {
     if (!city.trim()) return;
 
-    const response = await fetch(`/api/weather?city=${city}`);
+    const response = await fetch(`/api/forecast?city=${city}`);
     const data = await response.json();
 
-    setWeather(data);
+    const fiveDays = [
+      data.list[0],
+      data.list[8],
+      data.list[16],
+      data.list[24],
+      data.list[32],
+    ];
+
+    setWeather({
+      city: data.city,
+      forecast: fiveDays,
+    });
   };
 
   return (
-    <main className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
-        <h1 className="text-4xl font-bold text-center text-slate-800 mb-6">
+    <main className="min-h-screen bg-gradient-to-br from-sky-100 to-slate-200 flex items-center justify-center p-6">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8">
+
+        <h1 className="text-5xl font-bold text-center text-slate-800 mb-8">
           WeatherHub
         </h1>
 
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-4 mb-8">
           <input
             type="text"
             placeholder="Enter city..."
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="flex-1 border border-slate-300 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 border rounded-xl px-5 py-4 text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button
             onClick={handleSearch}
-            className="bg-blue-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-xl text-lg font-semibold transition"
           >
             Search
           </button>
         </div>
 
         {weather && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">
-              📍 {weather.name}
+          <>
+            <h2 className="text-3xl font-bold text-slate-800 text-center mb-8">
+              📍 {weather.city.name}
             </h2>
 
-            <div className="space-y-3 text-slate-700">
-              <p className="text-lg">
-                🌡️ Temperature:{" "}
-                <span className="font-semibold">
-                  {weather.main.temp}°C
-                </span>
-              </p>
+            <div className="grid grid-cols-5 gap-5">
 
-              <p className="text-lg">
-                💧 Humidity:{" "}
-                <span className="font-semibold">
-                  {weather.main.humidity}%
-                </span>
-              </p>
+              {weather.forecast.map((day: any, index: number) => (
 
-              <p className="text-lg">
-                🌬️ Wind Speed:{" "}
-                <span className="font-semibold">
-                  {weather.wind.speed} m/s
-                </span>
-              </p>
+                <div
+                  key={index}
+                  className="bg-white border rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition duration-300 cursor-pointer p-5 text-center"
+                >
+
+                  <h3 className="font-bold text-slate-700 mb-4">
+                    {new Date(day.dt_txt).toLocaleDateString("en-US", {
+                      weekday: "short",
+                    })}
+                  </h3>
+
+                  <div className="text-5xl mb-4">
+                    ☀️
+                  </div>
+
+                  <p className="text-3xl font-bold text-slate-800">
+                    {Math.round(day.main.temp)}°
+                  </p>
+
+                  <p className="text-sm text-slate-500 mt-4">
+                    💧 {day.main.humidity}%
+                  </p>
+
+                  <p className="text-sm text-slate-500">
+                    🌬 {Math.round(day.wind.speed)} m/s
+                  </p>
+
+                </div>
+
+              ))}
+
             </div>
-          </div>
+          </>
         )}
+
       </div>
     </main>
   );
