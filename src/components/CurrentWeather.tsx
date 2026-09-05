@@ -1,89 +1,132 @@
 import {
-  Sun,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  Wind,
   Droplets,
+  Eye,
+  Gauge,
   Thermometer,
+  Wind,
 } from "lucide-react";
 
 type CurrentWeatherProps = {
-  day: any;
-  city: string;
+  weather: any;
 };
 
-function WeatherIcon({ condition }: { condition: string }) {
-  switch (condition) {
-    case "Clear":
-      return <Sun size={90} className="text-yellow-500" />;
+export default function CurrentWeather({
+  weather,
+}: CurrentWeatherProps) {
+  const temperature = Math.round(weather.main.temp);
+  const feelsLike = Math.round(weather.main.feels_like);
+  const description = weather.weather[0].description;
+  const humidity = weather.main.humidity;
+  const windSpeed = weather.wind.speed;
+  const pressure = weather.main.pressure;
 
-    case "Clouds":
-      return <Cloud size={90} className="text-gray-500" />;
+  const visibility = weather.visibility
+    ? (weather.visibility / 1000).toFixed(1)
+    : "N/A";
 
-    case "Rain":
-      return <CloudRain size={90} className="text-blue-500" />;
+  const iconCode = weather.weather[0].icon;
 
-    case "Snow":
-      return <CloudSnow size={90} className="text-cyan-400" />;
+  return (
+    <section className="mb-10">
+      <div className="rounded-3xl bg-gradient-to-br from-blue-500 to-sky-400 p-6 text-white shadow-lg sm:p-8">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
 
-    case "Thunderstorm":
-      return (
-        <CloudLightning
-          size={90}
-          className="text-yellow-400"
-        />
-      );
+          <div>
+            <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-blue-100">
+              Current Weather
+            </p>
 
-    default:
-      return <Sun size={90} className="text-yellow-500" />;
-  }
+            <h2 className="text-3xl font-bold">
+              {weather.name}
+            </h2>
+
+            <p className="mt-1 capitalize text-blue-100">
+              {description}
+            </p>
+
+            <div className="mt-6 flex items-center gap-3">
+              <img
+                src={`https://openweathermap.org/img/wn/${iconCode}@2x.png`}
+                alt={description}
+                className="h-20 w-20"
+              />
+
+              <span className="text-6xl font-bold">
+                {temperature}°
+              </span>
+            </div>
+
+            <div className="mt-2 flex items-center gap-2 text-blue-100">
+              <Thermometer size={18} />
+
+              <span>
+                Feels like {feelsLike}°
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-2">
+
+            <WeatherDetail
+              icon={<Droplets size={20} />}
+              label="Humidity"
+              value={`${humidity}%`}
+            />
+
+            <WeatherDetail
+              icon={<Wind size={20} />}
+              label="Wind"
+              value={`${windSpeed} m/s`}
+            />
+
+            <WeatherDetail
+              icon={<Gauge size={20} />}
+              label="Pressure"
+              value={`${pressure} hPa`}
+            />
+
+            <WeatherDetail
+              icon={<Eye size={20} />}
+              label="Visibility"
+              value={
+                visibility === "N/A"
+                  ? visibility
+                  : `${visibility} km`
+              }
+            />
+
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
-export default function CurrentWeather({
-  day,
-  city,
-}: CurrentWeatherProps) {
+type WeatherDetailProps = {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+};
+
+function WeatherDetail({
+  icon,
+  label,
+  value,
+}: WeatherDetailProps) {
   return (
-    <div className="mb-12 text-center">
+    <div className="min-w-[130px] rounded-2xl bg-white/15 p-4 backdrop-blur-sm">
 
-      <p className="text-lg text-slate-500">
-        📍 {city}
-      </p>
+      <div className="mb-3 flex items-center gap-2 text-blue-100">
+        {icon}
 
-      <div className="flex justify-center my-4">
-        <WeatherIcon condition={day.weather[0].main} />
+        <span className="text-sm">
+          {label}
+        </span>
       </div>
 
-      <h1 className="text-7xl font-bold text-slate-800">
-        {Math.round(day.main.temp)}°
-      </h1>
-
-      <p className="text-2xl text-slate-600 mt-2">
-        {day.weather[0].description}
+      <p className="text-lg font-bold">
+        {value}
       </p>
-
-      <div className="flex justify-center gap-8 mt-8">
-
-        <div className="flex items-center gap-2">
-          <Thermometer className="text-red-500" />
-          <span>
-            Feels {Math.round(day.main.feels_like)}°
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Droplets className="text-blue-500" />
-          <span>{day.main.humidity}%</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Wind className="text-slate-500" />
-          <span>{Math.round(day.wind.speed)} m/s</span>
-        </div>
-
-      </div>
 
     </div>
   );
