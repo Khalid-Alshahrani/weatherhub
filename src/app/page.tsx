@@ -8,9 +8,12 @@ import ForecastGrid from "@/components/ForecastGrid";
 export default function Home() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
     if (!city.trim()) return;
+
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/forecast?city=${city}`);
@@ -38,6 +41,8 @@ export default function Home() {
     } catch (error) {
       console.error(error);
       alert("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,6 +57,7 @@ export default function Home() {
           city={city}
           setCity={setCity}
           handleSearch={handleSearch}
+          loading={loading}
         />
 
         {weather && (

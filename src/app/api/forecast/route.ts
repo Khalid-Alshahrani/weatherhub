@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -14,27 +15,28 @@ export async function GET(request: Request) {
     }
 
     const apiKey = process.env.OPENWEATHER_API_KEY;
-    console.log("API KEY:", apiKey);
 
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
+    const response = await axios.get(
+      "https://api.openweathermap.org/data/2.5/forecast",
+      {
+        params: {
+          q: city,
+          appid: apiKey,
+          units: "metric",
+        },
+        timeout: 30000,
+      }
     );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "OpenWeather API Error" },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error(error);
+    return NextResponse.json(response.data);
+  } catch (error: any) {
+    console.error("Axios Error:", error.message);
 
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      {
+        error: "Forecast API failed",
+        details: error.message,
+      },
       { status: 500 }
     );
   }
