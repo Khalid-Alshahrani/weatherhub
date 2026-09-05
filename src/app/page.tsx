@@ -12,27 +12,38 @@ export default function Home() {
   const handleSearch = async () => {
     if (!city.trim()) return;
 
-    const response = await fetch(`/api/forecast?city=${city}`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`/api/forecast?city=${city}`);
+      const data = await response.json();
 
-    const fiveDays = [
-      data.list[0],
-      data.list[8],
-      data.list[16],
-      data.list[24],
-      data.list[32],
-    ];
+      console.log("Forecast Response:", data);
 
-    setWeather({
-      city: data.city,
-      forecast: fiveDays,
-    });
+      if (!response.ok || !data.list) {
+        alert("Forecast API failed.");
+        return;
+      }
+
+      const fiveDays = [
+        data.list[0],
+        data.list[8],
+        data.list[16],
+        data.list[24],
+        data.list[32],
+      ];
+
+      setWeather({
+        city: data.city,
+        forecast: fiveDays,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong.");
+    }
   };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-sky-100 to-slate-200 flex items-center justify-center p-6">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8">
-
         <h1 className="text-5xl font-bold text-center text-slate-800 mb-8">
           WeatherHub
         </h1>
@@ -52,7 +63,6 @@ export default function Home() {
             <ForecastGrid forecast={weather.forecast} />
           </>
         )}
-
       </div>
     </main>
   );

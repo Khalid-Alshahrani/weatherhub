@@ -10,10 +10,10 @@ export default function SearchBar({
   handleSearch,
 }: SearchBarProps) {
   return (
-    <div className="flex gap-4 mb-8">
+    <div className="relative w-full mb-10">
       <input
         type="text"
-        placeholder="Enter city..."
+        placeholder="🔍 Search city..."
         value={city}
         onChange={(e) => setCity(e.target.value)}
         onKeyDown={(e) => {
@@ -21,15 +21,8 @@ export default function SearchBar({
             handleSearch();
           }
         }}
-        className="flex-1 border rounded-xl px-5 py-4 text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-2xl border border-slate-300 bg-white px-6 py-4 text-lg text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
       />
-
-      <button
-        onClick={handleSearch}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-xl text-lg font-semibold transition"
-      >
-        Search
-      </button>
     </div>
   );
 }
