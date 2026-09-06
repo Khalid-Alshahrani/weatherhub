@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { LocateFixed } from "lucide-react";
+import {
+  CloudSun,
+  LocateFixed,
+  MapPin,
+} from "lucide-react";
 
 import SearchBar from "@/components/SearchBar";
 import CurrentWeather from "@/components/CurrentWeather";
@@ -16,6 +20,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] =
     useState(false);
+
+  const [error, setError] = useState("");
 
   const loadWeather = async (
     forecastUrl: string,
@@ -32,14 +38,14 @@ export default function Home() {
 
     if (!forecastResponse.ok || !forecastData.list) {
       throw new Error(
-        forecastData.error || "Forecast API failed."
+        forecastData.error || "Unable to load forecast."
       );
     }
 
     if (!currentResponse.ok || !currentData.main) {
       throw new Error(
         currentData.error ||
-        "Current weather API failed."
+        "Unable to load current weather."
       );
     }
 
@@ -66,11 +72,13 @@ export default function Home() {
   const handleSearch = async () => {
     const trimmedCity = city.trim();
 
-    if (!trimmedCity) return;
+    if (!trimmedCity) {
+      setError("Enter a city to search.");
+      return;
+    }
 
+    setError("");
     setLoading(true);
-    setWeather(null);
-    setCurrentWeather(null);
 
     try {
       const encodedCity =
@@ -83,10 +91,10 @@ export default function Home() {
     } catch (error) {
       console.error(error);
 
-      alert(
+      setError(
         error instanceof Error
           ? error.message
-          : "Something went wrong."
+          : "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -94,17 +102,16 @@ export default function Home() {
   };
 
   const handleCurrentLocation = () => {
+    setError("");
+
     if (!navigator.geolocation) {
-      alert(
+      setError(
         "Geolocation is not supported by your browser."
       );
-
       return;
     }
 
     setLocationLoading(true);
-    setWeather(null);
-    setCurrentWeather(null);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -126,7 +133,7 @@ export default function Home() {
         } catch (error) {
           console.error(error);
 
-          alert(
+          setError(
             error instanceof Error
               ? error.message
               : "Unable to load weather for your location."
@@ -137,38 +144,32 @@ export default function Home() {
       },
 
       (error) => {
-        console.error(
-          "Geolocation error:",
-          error
-        );
+        console.error("Geolocation error:", error);
 
         setLocationLoading(false);
 
         if (error.code === error.PERMISSION_DENIED) {
-          alert(
-            "Location permission was denied. Please allow location access and try again."
+          setError(
+            "Location permission was denied. Allow location access and try again."
           );
-
           return;
         }
 
         if (error.code === error.POSITION_UNAVAILABLE) {
-          alert(
+          setError(
             "Your current location is unavailable."
           );
-
           return;
         }
 
         if (error.code === error.TIMEOUT) {
-          alert(
+          setError(
             "Getting your location took too long. Please try again."
           );
-
           return;
         }
 
-        alert(
+        setError(
           "Unable to access your current location."
         );
       },
@@ -185,78 +186,141 @@ export default function Home() {
     loading || locationLoading;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-sky-100 to-slate-200 flex items-center justify-center p-6">
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8">
+    <main className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-100 px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto w-full max-w-6xl">
 
-        <h1 className="text-5xl font-bold text-center text-slate-800 mb-8">
-          WeatherHub
-        </h1>
-
-        <div className="flex items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <SearchBar
-              city={city}
-              setCity={setCity}
-              handleSearch={handleSearch}
-              loading={isLoading}
-            />
+        <header className="mb-10 text-center">
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+              <CloudSun size={30} />
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCurrentLocation}
-            disabled={isLoading}
-            aria-label="Use current location"
-            title="Use current location"
-            className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-blue-600 shadow-sm transition hover:border-blue-400 hover:bg-blue-50 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-          >
-            <LocateFixed
-              size={24}
-              className={
-                locationLoading
-                  ? "animate-pulse"
-                  : ""
-              }
-            />
-          </button>
-        </div>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            WeatherHub
+          </h1>
 
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-            <div className="h-14 w-14 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+          <p className="mx-auto mt-3 max-w-xl text-base text-slate-500 sm:text-lg">
+            Current conditions and a five-day forecast
+            for cities around the world.
+          </p>
+        </header>
 
-            <p className="mt-6 text-xl font-semibold text-slate-600">
-              {locationLoading
-                ? "Getting your location..."
-                : "Searching weather..."}
-            </p>
-          </div>
-        )}
+        <section className="rounded-3xl border border-white/80 bg-white/90 p-4 shadow-xl shadow-slate-200/60 backdrop-blur sm:p-6 lg:p-8">
 
-        {!isLoading &&
-          currentWeather &&
-          weather && (
-            <>
-              <CurrentWeather
-                weather={currentWeather}
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <SearchBar
+                city={city}
+                setCity={setCity}
+                handleSearch={handleSearch}
+                loading={isLoading}
               />
+            </div>
 
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-slate-800">
-                  5-Day Forecast
+            <button
+              type="button"
+              onClick={handleCurrentLocation}
+              disabled={isLoading}
+              aria-label="Use current location"
+              title="Use current location"
+              className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:h-[60px] sm:w-[60px]"
+            >
+              <LocateFixed
+                size={23}
+                className={
+                  locationLoading
+                    ? "animate-pulse"
+                    : ""
+                }
+              />
+            </button>
+          </div>
+
+          {error && (
+            <div
+              role="alert"
+              className="mb-8 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-red-500" />
+
+              <p>{error}</p>
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="flex min-h-[360px] flex-col items-center justify-center">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
+
+              <p className="mt-5 font-semibold text-slate-700">
+                {locationLoading
+                  ? "Getting your location..."
+                  : "Loading weather..."}
+              </p>
+
+              <p className="mt-1 text-sm text-slate-400">
+                This should only take a moment.
+              </p>
+            </div>
+          )}
+
+          {!isLoading &&
+            !currentWeather &&
+            !weather && (
+              <div className="flex min-h-[360px] flex-col items-center justify-center px-4 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sky-50 text-blue-500">
+                  <MapPin size={34} />
+                </div>
+
+                <h2 className="mt-6 text-xl font-bold text-slate-800">
+                  Search for a city
                 </h2>
 
-                <p className="mt-1 text-slate-500">
-                  Weather forecast for{" "}
-                  {weather.city.name}
+                <p className="mt-2 max-w-sm text-slate-500">
+                  Enter a city above or use your current
+                  location to see the latest weather.
                 </p>
               </div>
+            )}
 
-              <ForecastGrid
-                forecast={weather.forecast}
-              />
-            </>
-          )}
+          {!isLoading &&
+            currentWeather &&
+            weather && (
+              <>
+                <CurrentWeather
+                  weather={currentWeather}
+                />
+
+                <div className="mb-5 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">
+                      Upcoming
+                    </p>
+
+                    <h2 className="mt-1 text-2xl font-bold text-slate-900">
+                      5-Day Forecast
+                    </h2>
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      Forecast for {weather.city.name}
+                    </p>
+                  </div>
+
+                  <p className="hidden text-sm text-slate-400 sm:block">
+                    Select a day for details
+                  </p>
+                </div>
+
+                <ForecastGrid
+                  forecast={weather.forecast}
+                />
+              </>
+            )}
+        </section>
+
+        <footer className="mt-6 text-center text-sm text-slate-400">
+          Weather data provided by OpenWeather
+        </footer>
 
       </div>
     </main>

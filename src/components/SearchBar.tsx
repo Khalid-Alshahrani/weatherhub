@@ -5,6 +5,7 @@ import {
   MapPin,
   Search,
 } from "lucide-react";
+
 import {
   useEffect,
   useRef,
@@ -32,9 +33,8 @@ export default function SearchBar({
   handleSearch,
   loading,
 }: SearchBarProps) {
-  const [suggestions, setSuggestions] = useState<
-    CitySuggestion[]
-  >([]);
+  const [suggestions, setSuggestions] =
+    useState<CitySuggestion[]>([]);
 
   const [suggestionsLoading, setSuggestionsLoading] =
     useState(false);
@@ -45,10 +45,13 @@ export default function SearchBar({
   const [selectedSuggestion, setSelectedSuggestion] =
     useState(false);
 
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef =
+    useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
+    const handleOutsideClick = (
+      event: MouseEvent
+    ) => {
       if (
         searchContainerRef.current &&
         !searchContainerRef.current.contains(
@@ -96,7 +99,9 @@ export default function SearchBar({
         setSuggestionsLoading(true);
 
         const response = await fetch(
-          `/api/cities?q=${encodeURIComponent(query)}`,
+          `/api/cities?q=${encodeURIComponent(
+            query
+          )}`,
           {
             signal: controller.signal,
           }
@@ -159,7 +164,7 @@ export default function SearchBar({
   };
 
   return (
-    <div className="mb-8 flex gap-4">
+    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
       <div
         ref={searchContainerRef}
         className="relative flex-1"
@@ -171,7 +176,7 @@ export default function SearchBar({
 
         <input
           type="text"
-          placeholder="Search city..."
+          placeholder="Search for a city..."
           value={city}
           disabled={loading}
           autoComplete="off"
@@ -192,7 +197,7 @@ export default function SearchBar({
               setShowSuggestions(false);
             }
           }}
-          className="w-full rounded-xl border border-slate-300 py-4 pl-12 pr-12 text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100"
+          className="h-[58px] w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-12 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:h-[60px] sm:text-lg"
         />
 
         {suggestionsLoading && (
@@ -204,10 +209,8 @@ export default function SearchBar({
 
         {showSuggestions &&
           !loading &&
-          (suggestions.length > 0 ||
-            suggestionsLoading) && (
-            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-
+          suggestions.length > 0 && (
+            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-300/40">
               {suggestions.map(
                 (suggestion, index) => (
                   <button
@@ -218,10 +221,10 @@ export default function SearchBar({
                         suggestion
                       )
                     }
-                    className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-sky-50"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-sky-50"
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-blue-600">
-                      <MapPin size={18} />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                      <MapPin size={17} />
                     </div>
 
                     <div className="min-w-0">
@@ -241,7 +244,6 @@ export default function SearchBar({
                   </button>
                 )
               )}
-
             </div>
           )}
       </div>
@@ -250,12 +252,12 @@ export default function SearchBar({
         type="button"
         disabled={loading}
         onClick={handleSubmit}
-        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 text-lg font-semibold text-white transition hover:bg-blue-700 disabled:bg-slate-400"
+        className="flex h-[58px] items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400 sm:h-[60px]"
       >
         {loading ? (
           <>
             <LoaderCircle className="h-5 w-5 animate-spin" />
-            Searching...
+            Loading
           </>
         ) : (
           <>
