@@ -9,6 +9,7 @@ import {
 type ForecastCardProps = {
   day: any;
   index: number;
+  onSelect: (day: any) => void;
 };
 
 function WeatherIcon({ condition }: { condition: string }) {
@@ -40,10 +41,14 @@ function WeatherIcon({ condition }: { condition: string }) {
 
 export default function ForecastCard({
   day,
+  onSelect,
 }: ForecastCardProps) {
   return (
-    <div className="bg-white border rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 hover:scale-105 transition-all duration-300 cursor-pointer p-5 text-center">
-
+    <button
+      type="button"
+      onClick={() => onSelect(day)}
+      className="w-full bg-white border rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 hover:scale-105 transition-all duration-300 cursor-pointer p-5 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
       <h3 className="font-semibold text-slate-700 mb-3">
         {new Date(day.dt_txt).toLocaleDateString("en-US", {
           weekday: "short",
@@ -55,7 +60,6 @@ export default function ForecastCard({
       <p className="text-3xl font-bold text-slate-800 mt-3">
         {Math.round(day.main.temp)}°
       </p>
-
-    </div>
+    </button>
   );
 }
