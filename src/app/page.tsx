@@ -38,7 +38,8 @@ export default function Home() {
 
     if (!forecastResponse.ok || !forecastData.list) {
       throw new Error(
-        forecastData.error || "Unable to load forecast."
+        forecastData.error ||
+        "Unable to load forecast."
       );
     }
 
@@ -144,7 +145,10 @@ export default function Home() {
       },
 
       (error) => {
-        console.error("Geolocation error:", error);
+        console.error(
+          "Geolocation error:",
+          error
+        );
 
         setLocationLoading(false);
 
@@ -155,7 +159,10 @@ export default function Home() {
           return;
         }
 
-        if (error.code === error.POSITION_UNAVAILABLE) {
+        if (
+          error.code ===
+          error.POSITION_UNAVAILABLE
+        ) {
           setError(
             "Your current location is unavailable."
           );
@@ -206,7 +213,7 @@ export default function Home() {
           </p>
         </header>
 
-        <section className="rounded-3xl border border-white/80 bg-white/90 p-4 shadow-xl shadow-slate-200/60 backdrop-blur sm:p-6 lg:p-8">
+        <section className="rounded-3xl border border-white/80 bg-white/90 p-4 shadow-xl shadow-slate-200/60 sm:p-6 lg:p-8">
 
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
@@ -242,7 +249,7 @@ export default function Home() {
               role="alert"
               className="mb-8 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
-              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-red-500" />
+              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-red-500" />
 
               <p>{error}</p>
             </div>
@@ -268,6 +275,7 @@ export default function Home() {
             !currentWeather &&
             !weather && (
               <div className="flex min-h-[360px] flex-col items-center justify-center px-4 text-center">
+
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sky-50 text-blue-500">
                   <MapPin size={34} />
                 </div>
@@ -280,6 +288,7 @@ export default function Home() {
                   Enter a city above or use your current
                   location to see the latest weather.
                 </p>
+
               </div>
             )}
 
@@ -302,7 +311,8 @@ export default function Home() {
                     </h2>
 
                     <p className="mt-1 text-sm text-slate-500">
-                      Forecast for {weather.city.name}
+                      Forecast for{" "}
+                      {weather.city.name}
                     </p>
                   </div>
 
@@ -316,6 +326,7 @@ export default function Home() {
                 />
               </>
             )}
+
         </section>
 
         <footer className="mt-6 text-center text-sm text-slate-400">

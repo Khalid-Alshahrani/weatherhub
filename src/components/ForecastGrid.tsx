@@ -12,28 +12,22 @@ type ForecastGridProps = {
 export default function ForecastGrid({
   forecast,
 }: ForecastGridProps) {
-  const [selectedDay, setSelectedDay] = useState<any>(null);
+  const [selectedDay, setSelectedDay] =
+    useState<any>(null);
 
   return (
     <>
-      <div
-        className="
-          grid
-          grid-cols-2
-          gap-4
-          sm:grid-cols-3
-          md:grid-cols-4
-          lg:grid-cols-5
-        "
-      >
-        {forecast.map((day: any, index: number) => (
-          <ForecastCard
-            key={index}
-            day={day}
-            index={index}
-            onSelect={setSelectedDay}
-          />
-        ))}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+        {forecast.map(
+          (day: any, index: number) => (
+            <ForecastCard
+              key={`${day.dt}-${index}`}
+              day={day}
+              index={index}
+              onSelect={setSelectedDay}
+            />
+          )
+        )}
       </div>
 
       {selectedDay && (

@@ -28,15 +28,15 @@ export default function CurrentWeather({
 
   return (
     <section className="mb-10">
-      <div className="rounded-3xl bg-gradient-to-br from-blue-500 to-sky-400 p-6 text-white shadow-lg sm:p-8">
-        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-sky-400 p-6 text-white shadow-xl shadow-blue-500/20 sm:p-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
 
-          <div>
-            <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-blue-100">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-100">
               Current Weather
             </p>
 
-            <h2 className="text-3xl font-bold">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
               {weather.name}
             </h2>
 
@@ -44,19 +44,19 @@ export default function CurrentWeather({
               {description}
             </p>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-5 flex items-center">
               <img
                 src={`https://openweathermap.org/img/wn/${iconCode}@2x.png`}
                 alt={description}
-                className="h-20 w-20"
+                className="h-20 w-20 sm:h-24 sm:w-24"
               />
 
-              <span className="text-6xl font-bold">
+              <span className="text-6xl font-bold tracking-tight sm:text-7xl">
                 {temperature}°
               </span>
             </div>
 
-            <div className="mt-2 flex items-center gap-2 text-blue-100">
+            <div className="mt-1 flex items-center gap-2 text-blue-100">
               <Thermometer size={18} />
 
               <span>
@@ -65,8 +65,7 @@ export default function CurrentWeather({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-2">
-
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
             <WeatherDetail
               icon={<Droplets size={20} />}
               label="Humidity"
@@ -94,8 +93,8 @@ export default function CurrentWeather({
                   : `${visibility} km`
               }
             />
-
           </div>
+
         </div>
       </div>
     </section>
@@ -114,9 +113,8 @@ function WeatherDetail({
   value,
 }: WeatherDetailProps) {
   return (
-    <div className="min-w-[130px] rounded-2xl bg-white/15 p-4 backdrop-blur-sm">
-
-      <div className="mb-3 flex items-center gap-2 text-blue-100">
+    <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm sm:min-w-[135px]">
+      <div className="mb-2 flex items-center gap-2 text-blue-100">
         {icon}
 
         <span className="text-sm">
@@ -124,10 +122,9 @@ function WeatherDetail({
         </span>
       </div>
 
-      <p className="text-lg font-bold">
+      <p className="font-bold text-white sm:text-lg">
         {value}
       </p>
-
     </div>
   );
 }
